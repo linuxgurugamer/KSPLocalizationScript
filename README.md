@@ -50,7 +50,7 @@ To ignore a section of CSharp code, surround the section to be ignored with a re
 An ini file is included which contains a few common strings to be ignored. It can also exclude and/or 
 include specific files.  The strings can be either simple strings or regular expressions.  Both strings 
 and files can be excluded, only files can be included.  Full documentation for the file is at the head
-of the file.  The ini file included can be replaced by specifying the --initfile=<file> to use your
+of the file.  The ini file included can be replaced by specifying the --inifile=<file> to use your
 own ini file
 
 
@@ -81,7 +81,7 @@ While pre-existing localized tags are not treated as strings, there is no mechan
 for duplicates with any pre-existing tags.  If the mod does have some pre-existing tags, the
 safest thing to do is just use a different prefix.
 
-Pre-existing localization files may be overwritten if the names are the same
+Pre-existing localization files may be overwritten if the names are the same.
 
 Another quirk is the way KSP deals with Event strings.  While normally code needs to call Localizer.Format
 to get the localized string, there is no need to do this for events since the event code itself will be 
@@ -91,8 +91,9 @@ change in functionality.
 This is something the user will need to look at during the conversion process
 
 When running this on a C-Sharp code-based mod, there is no way to determine if a string is meant for 
-internal use or not.  This is where the --revert option comes in handy.  Simply add the --revert to the 
-existing line and run to undo all the changes.  There are two tools available to fix this:
+internal use or not.  This is where the --revert option and the NO_LOCALIZATION region_ comes in handy.  
+Simply add the --revert to the existing line and run to undo all the changes.  There are two tools 
+available to fix this:
 
 	1.  Use the #region NO_LOCALIZATION  / #endregion to mark sections of code which should not be localized
 	2.  Use the --ignorelistfile=ignorelist.txt, and add the strings which should be ignored to the file

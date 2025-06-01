@@ -7,8 +7,15 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KSPLocalizationScript", "KS
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8EC462FD-D22E-90A8-E5CE-7E832BA40C5D}"
 	ProjectSection(SolutionItems) = preProject
+		ChangeLog = ChangeLog
+		Docs\Instructions.docx = Docs\Instructions.docx
+		License.md = License.md
 		localization.ini = localization.ini
+		localizer.cmd = localizer.cmd
+		localizer.sh = localizer.sh
 		README.md = README.md
+		release.cmd = release.cmd
+		version.txt = version.txt
 	EndProjectSection
 EndProject
 Global
