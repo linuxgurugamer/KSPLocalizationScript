@@ -9,6 +9,7 @@ It updates the source files with the localization tag.
 Original files are backed up to <file>.bak file for easy reverts
 
 It was created with the assistance of ChatGPT 
+
 ---
 
 ## Usage
