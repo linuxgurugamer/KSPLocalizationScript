@@ -1,5 +1,5 @@
-﻿using System.Text.RegularExpressions;
-
+﻿using KSPLocalizer;
+using System.Text.RegularExpressions;
 
 namespace KspLocalizer
 {
@@ -40,6 +40,7 @@ namespace KspLocalizer
             bool numerictags = false;
             string appPath = AppDomain.CurrentDomain.BaseDirectory;
 
+            Console.WriteLine("KSP Localizer version " + VersionInfo.FullVersion);
 
             string inifile = $"{appPath}\\localization.ini";
             bool help = false;
