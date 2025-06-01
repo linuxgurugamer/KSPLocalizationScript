@@ -21,10 +21,10 @@ namespace KspLocalizer
         private const int DefaultMaxLength = 25;
         static int numericTag = 0;
 
-        internal static HashSet<SearchPattern> includeStrings;
-        internal static HashSet<SearchPattern> includeFiles;
-        internal static HashSet<SearchPattern> excludeStrings;
-        internal static HashSet<SearchPattern> excludeFiles ;
+        internal static HashSet<SearchPattern> includeStrings = new HashSet<SearchPattern>();
+        internal static HashSet<SearchPattern> includeFiles = new HashSet<SearchPattern>();
+        internal static HashSet<SearchPattern> excludeStrings = new HashSet<SearchPattern>();
+        internal static HashSet<SearchPattern> excludeFiles = new HashSet<SearchPattern>();
 
         internal static int GetNextTag { get { numericTag++; return numericTag; } }
         internal static bool separatePartsCfg = false;
@@ -43,6 +43,8 @@ namespace KspLocalizer
             Console.WriteLine("KSP Localizer version " + VersionInfo.FullVersion);
 
             string inifile = $"{appPath}\\localization.ini";
+            IniReader.ReadIniFile(inifile, ref includeStrings, ref includeFiles, ref excludeStrings, ref excludeFiles);
+
             bool help = false;
 
             string root = args[0];
@@ -57,6 +59,7 @@ namespace KspLocalizer
                 if (arg.StartsWith("--inifile=")) // 10 chars long
                 {
                     inifile = arg.Substring(17);
+                    IniReader.ReadIniFile(inifile, ref includeStrings, ref includeFiles, ref excludeStrings, ref excludeFiles);
                 }
                 else
                 if (arg.Equals("--numerictags", StringComparison.OrdinalIgnoreCase))
@@ -132,7 +135,6 @@ namespace KspLocalizer
                 locDir = outdir;
 
 
-            IniReader.ReadIniFile(inifile, out includeStrings, out includeFiles, out excludeStrings, out excludeFiles);
 
 
             locDir = EnsurePathWithValidation(locDir);
@@ -146,6 +148,7 @@ namespace KspLocalizer
                 Console.WriteLine("Deleting: " + cfgPath);
             if (File.Exists(csvPath))
                 Console.WriteLine("Deleting: " + csvPath);
+            Console.WriteLine("\n");
             File.Delete(cfgPath);
             File.Delete(csvPath);
 

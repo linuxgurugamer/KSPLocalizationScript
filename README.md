@@ -28,6 +28,12 @@ To ignore a section of CSharp code, surround the section to be ignored with a re
 #endregion
 
 
+Attributes are a trickier issue, since they require constances.  To define a region as attributes, you can use:
+#region ATTRIBUTE_LOCALIZATION
+....
+#endregion_
+
+
 ### Options
 
 | Option                      | Description                                                                  |
@@ -51,7 +57,7 @@ An ini file is included which contains a few common strings to be ignored. It ca
 include specific files.  The strings can be either simple strings or regular expressions.  Both strings 
 and files can be excluded, only files can be included.  Full documentation for the file is at the head
 of the file.  The ini file included can be replaced by specifying the --inifile=<file> to use your
-own ini file
+own ini file.  Multiple ini files are allowed.
 
 
 ## --revert and --cleanbak
@@ -95,5 +101,20 @@ internal use or not.  This is where the --revert option and the NO_LOCALIZATION 
 Simply add the --revert to the existing line and run to undo all the changes.  There are two tools 
 available to fix this:
 
-	1.  Use the #region NO_LOCALIZATION  / #endregion to mark sections of code which should not be localized
-	2.  Use the --ignorelistfile=ignorelist.txt, and add the strings which should be ignored to the file
+	1.  Use the 
+
+		#region NO_LOCALIZATION
+		....
+		#endregion 
+		to mark sections of code which should not be localized
+
+	2.	Attributes are a trickier issue, since they require constances.  To define a region as attributes, you can use:
+
+		#region ATTRIBUTE_LOCALIZATION
+		....
+		#endregion_
+
+	3.	Copy the ini file from the program directory to a new location, use the
+ --inifile=inifile.ini
+and add the strings which should be ignored to the file
+

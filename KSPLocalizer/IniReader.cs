@@ -6,16 +6,11 @@ namespace KspLocalizer
     {
         public static void ReadIniFile(
                string filePath,
-               out HashSet<SearchPattern> includeStrings,
-               out HashSet<SearchPattern> includeFiles,
-               out HashSet<SearchPattern> excludeStrings,
-               out HashSet<SearchPattern> excludeFiles)
+               ref HashSet<SearchPattern> includeStrings,
+               ref HashSet<SearchPattern> includeFiles,
+               ref HashSet<SearchPattern> excludeStrings,
+               ref HashSet<SearchPattern> excludeFiles)
         {
-            includeStrings = new HashSet<SearchPattern>();
-            includeFiles = new HashSet<SearchPattern>();
-            excludeStrings = new HashSet<SearchPattern>();
-            excludeFiles = new HashSet<SearchPattern>();
-
             string currentSection = "";
 
             foreach (var line in File.ReadLines(filePath))

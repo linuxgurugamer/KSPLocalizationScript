@@ -238,7 +238,7 @@ internal static class KspCSLocalizer
                 modifiedFiles += (KspCSLocalizer.ProcessFile(cs, prefix, keyMap, dupCounts, numerictags) ? 1 : 0);
         }
         Console.WriteLine($"\n\nCode Files Processed:\n");
-        Console.WriteLine($" {allFiles.Count()} *.cs files; modified {modifiedFiles}; generated {keyMap.Count} unique keys.");
+        Console.WriteLine($" {allFiles.Count()} *.cs files; modified {modifiedFiles}; generated {keyMap.Count} unique keys.\n\n");
 
         if (KSPLocalizer.includeFiles.Count > 0)
         {
@@ -275,6 +275,8 @@ internal static class KspCSLocalizer
         if (!File.Exists(bakPath))
             File.Copy(path, bakPath);
 
+        Console.WriteLine($"Updated {path}");
+
         var lines = File.ReadAllLines(path).ToList();
         bool hasUsing = lines.Any(l => l.Contains("using KSP.Localization;", StringComparison.Ordinal));
 
@@ -282,7 +284,7 @@ internal static class KspCSLocalizer
         bool inBlockComment = false;
         int noLocDepth = 0;
         bool modified = false;
-
+        bool attribLoc = false;
 
         foreach (var line in lines)
         {
@@ -298,7 +300,12 @@ internal static class KspCSLocalizer
             }
             if (trimmed.StartsWith("#endregion", StringComparison.OrdinalIgnoreCase))
             {
-                if (noLocDepth > 0) noLocDepth--;
+                if (attribLoc)
+                    attribLoc = false;
+                else
+                {
+                    if (noLocDepth > 0) noLocDepth--;
+                }
                 rewritten.Add(line);
                 continue;
             }
@@ -316,6 +323,12 @@ internal static class KspCSLocalizer
                 rewritten.Add(line);
                 continue;
             }
+            if (trimmed.StartsWith("#region", StringComparison.OrdinalIgnoreCase) &&
+                trimmed.IndexOf("ATTRIBUTE_LOCALIZATION", StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                attribLoc = true;
+            }
+
             // switch-case guard
             if (trimmed.StartsWith("case ", StringComparison.Ordinal))
             {
@@ -352,7 +365,10 @@ internal static class KspCSLocalizer
                     else
                     {
                         string key = GetOrCreateKey(literal, prefix, keyMap, dupCounts, numerictags);
-                        rebuilt.Append($"Localizer.Format(\"#{key}\")");
+                        if (!attribLoc)
+                            rebuilt.Append($"Localizer.Format(\"#{key}\")");
+                        else
+                            rebuilt.Append($"\"#{key}\"");
                         modified = true;
                     }
                 }
