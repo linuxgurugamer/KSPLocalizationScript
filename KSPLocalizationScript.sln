@@ -10,13 +10,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		ChangeLog = ChangeLog
 		Docs\Instructions.docx = Docs\Instructions.docx
 		License.md = License.md
+		KSPLocalizer.version = KSPLocalizer.version
 		localization.ini = localization.ini
 		localizer.cmd = localizer.cmd
 		localizer.sh = localizer.sh
 		README.md = README.md
 		release.cmd = release.cmd
-		version.txt = version.txt
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BuildProcessor", "BuildProcessor\BuildProcessor.csproj", "{2DA3388B-DC04-472A-8109-6F26DB198A7F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -28,6 +30,10 @@ Global
 		{D9BD3C57-1126-49CA-80B4-4E06B9298EDB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D9BD3C57-1126-49CA-80B4-4E06B9298EDB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D9BD3C57-1126-49CA-80B4-4E06B9298EDB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2DA3388B-DC04-472A-8109-6F26DB198A7F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2DA3388B-DC04-472A-8109-6F26DB198A7F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2DA3388B-DC04-472A-8109-6F26DB198A7F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2DA3388B-DC04-472A-8109-6F26DB198A7F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

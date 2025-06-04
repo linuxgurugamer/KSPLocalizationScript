@@ -1,4 +1,29 @@
-﻿using KSPLocalizer;
+﻿// -----------------------------------------------------------------------------
+// Console utility: scans *.cs and *.cfg files, replaces hard‑coded C# string
+// literals and strings in cfg files with Kerbal Space Program localization keys
+//
+// Key features
+// ------------
+// For C-Sharp code files:
+// • Backs up each file to <file>.bak and supports a --revert flag.
+// • Skips lines whose first non‑whitespace character is '[' (attributes).
+//   until the next semicolon
+// • Skips code wrapped in  #region NO_LOCALIZATION … #endregion blocks.
+// • Injects `using KSP.Localization;` when missing.
+// • Generates keys as  #<prefix>_<sanitised>(≤25)  with automatic _DUP<n>.
+//
+// For cfg files:
+// • Scans Kerbal Space Program part *.cfg files for user‑visible
+// • strings—including titles, descriptions, manufacturer labels,
+// • action & event names—replacing them with localization keys.
+// • Duplicate strings automatically reuse the same key.
+// • keeps .bak backups so you can revert with --revert.
+// 
+// For both:
+// • Writes / updates  Localization/en-us.cfg  (KSP format) and en-us.csv.
+// 
+
+using KSPLocalizer;
 using System.Text.RegularExpressions;
 
 namespace KspLocalizer

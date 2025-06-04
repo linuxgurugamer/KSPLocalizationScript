@@ -108,13 +108,15 @@ available to fix this:
 		#endregion 
 		to mark sections of code which should not be localized
 
-	2.	Attributes are a trickier issue, since they require constances.  To define a region as attributes, you can use:
+	2.	Attributes are a trickier issue, since they require constants.  The code should recognize 
+		attributes, but in the event it doesn’t in some cases, there is a way to define a region as 
+		attributes. You can use:
 
 		#region ATTRIBUTE_LOCALIZATION
 		....
 		#endregion_
 
 	3.	Copy the ini file from the program directory to a new location, use the
- --inifile=inifile.ini
-and add the strings which should be ignored to the file
+			--inifile=inifile.ini
+		and add the strings which should be ignored to the file
 

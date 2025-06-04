@@ -1,0 +1,26 @@
+{
+  "NAME": "KSP Localizer",
+  "URL": "https://raw.githubusercontent.com/linuxgurugamer/KSPLocalizationScript/refs/heads/main/KSPLocalizer.version",
+  "DOWNLOAD": "https://spacedock.info/mod/???",
+  "GITHUB": {
+    "USERNAME": "linuxgurugamer",
+    "REPOSITORY": "KSPLocalizationScript",
+    "ALLOW_PRE_RELEASE": false
+  },
+  "VERSION": {
+    "MAJOR": 1,
+    "MINOR": 0,
+    "PATCH": 0,
+    "BUILD": 8
+  },
+  "KSP_VERSION": {
+    "MAJOR": 1,
+    "MINOR": 3,
+    "PATCH": 0
+  },
+  "KSP_VERSION_MIN": {
+    "MAJOR": 1,
+    "MINOR": 12,
+    "PATCH": 99
+  }
+}
