@@ -13,7 +13,7 @@ namespace KspLocalizer
         {
             string appPath = AppDomain.CurrentDomain.BaseDirectory;
 
-            foreach (var line in File.ReadLines($"{appPath}\\README.md"))
+            foreach (var line in File.ReadLines($"{appPath}/README.md"))
             {
                 Console.WriteLine(line);
             }

@@ -24,7 +24,6 @@
 // 
 
 using KSPLocalizer;
-using System.Text.RegularExpressions;
 
 namespace KspLocalizer
 {
@@ -67,12 +66,14 @@ namespace KspLocalizer
 
             Console.WriteLine("KSP Localizer version " + VersionInfo.FullVersion);
 
-            string inifile = $"{appPath}\\localization.ini";
+            string inifile = $"{appPath}/localization.ini";
             IniReader.ReadIniFile(inifile, ref includeStrings, ref includeFiles, ref excludeStrings, ref excludeFiles);
 
             bool help = false;
 
-            string root = args[0];
+            string root = "";
+            if (args.Length > 0)
+                root = args[0];
 
             foreach (string arg in args.Skip(1))
             {
@@ -128,7 +129,8 @@ namespace KspLocalizer
                     cfgonly = true;
                 }
                 else
-                if (arg.Equals("--help", StringComparison.OrdinalIgnoreCase))
+                if (arg.Equals("--help", StringComparison.OrdinalIgnoreCase) ||
+                    arg.Equals("-?", StringComparison.OrdinalIgnoreCase) )
                 {
                     help = true;
                 }
@@ -149,18 +151,18 @@ namespace KspLocalizer
                 return;
             }
 
-            if (help)
+            if (help || root == "--help" || root == "-?" || args.Length == 0)
             {
                 Help.ShowHelp();
                 return;
             }
 
+
             string locDir = Path.Combine(root, KspCSLocalizer.LocalizationFolder);
             if (outdir != "")
                 locDir = outdir;
-
-
-
+            if (locDir is null)
+                Console.WriteLine("locDir is null: ");
 
             locDir = EnsurePathWithValidation(locDir);
 

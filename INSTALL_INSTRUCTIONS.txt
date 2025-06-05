@@ -1,0 +1,90 @@
+Installation
+
+1.  Download the release zip file 
+2.  Unpack it somewhere.  
+		The zip file will contain a folder called KSPLocalizer. 
+		The entire folder should be copied locally.
+		The actual location doesn't matter.
+
+3.  There are two small utility files in the folder:
+		localizer.cmd  (for use on Windows)
+		localizer.sh   (for use on Mac or Linux)
+
+	These are intended to make it easier to use without having to change 
+	the PATH variable.
+
+4.  If on Linux or Mac only:
+	Run the following commands to make the file executable:
+
+		cd KSPLocalizer
+		chmod -x *
+		chmod 755 localizer.sh
+		dos2unix  localizer.sh
+
+5.  Edit the appropriate script file and set the path to the program.
+
+SPECIAL INSTRUCTIONS FOR LINUX
+
+Since this is a .Net 8.8 program an additional linux package is needed in order 
+to run this on Linux.  How to install will depend on the version of Linux
+being used.  The following table shows the command for various flavors of Linux,
+but it is not comprehensive.  This information was obtained from a Microsoft page,
+please consult it for more details (https://learn.microsoft.com/en-us/dotnet/core/install/):
+
+	Linux Distribution		Command(s)
+
+	Ubuntu 24.10			sudo apt-get update && sudo apt-get install -y dotnet-sdk-8.0
+	Alpine 3.18-3.21		sudo apk add dotnet8-sdk
+	CentOS Stream 8, 9		sudo dnf install dotnet-runtime-8.0
+	RHEL 8, 9				sudo dnf install dotnet-runtime-8.0
+
+	Debian 12				wget https://packages.microsoft.com/config/debian/12/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
+							sudo dpkg -i packages-microsoft-prod.deb
+							rm packages-microsoft-prod.deb
+							sudo apt-get update && sudo apt-get install -y dotnet-sdk-8.0
+	
+	Fedora 40, 41			sudo dnf install dotnet-runtime-8.0
+
+	openSUSE Leap 15		sudo zypper install libicu
+							sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
+							wget https://packages.microsoft.com/config/opensuse/15/prod.repo
+							sudo mv prod.repo /etc/zypp/repos.d/microsoft-prod.repo
+							sudo chown root:root /etc/zypp/repos.d/microsoft-prod.repo
+							sudo zypper install dotnet-sdk-8.0
+
+	SLES 15					sudo rpm -Uvh https://packages.microsoft.com/config/sles/15/packages-microsoft-prod.rpm
+							sudo zypper install dotnet-runtime-8.0
+
+SPECIAL INSTRUCTIONS FOR MAC OS
+
+The following versions of macOS are supported by Microsoft for .NET 8.0
+	
+	macOS 15 "Sequoia"
+	macOS 14 "Sonoma"
+	macOS 13 "Ventura"
+
+There are several ways to install .NET 8 on macOS.  The following are the most common ways:
+
+Homebrew
+Homebrew is a free and open-source package manager for macOS.  If you don't have it installed
+but would like to, it can be obtained from the following web site:
+
+	https://brew.sh/
+
+If you have Homebrew installed, .NET 8 can be installed using the following command:
+
+	brew install dotnet@8
+
+Other ways to install .NET 8 are detailed on this web site from Microsoft:
+
+	https://learn.microsoft.com/en-us/dotnet/core/install/macos
+
+Usage
+
+The program can be called directly (obviating the need for the shell script), 
+or the shell script can be copied to wherever you want to run it from.  
+
+It is  not recommended copying it to the top directory/folder of the mod.
+
+
+Full usage instructions are in the README.md
