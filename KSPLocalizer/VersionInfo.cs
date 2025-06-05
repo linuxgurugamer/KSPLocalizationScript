@@ -8,10 +8,10 @@ namespace KSPLocalizer
 {
     public static class VersionInfo
     {
-        public const string FullVersion = "1.0.0.8";
+        public const string FullVersion = "1.0.0.12";
         public const int Major = 1;
         public const int Minor = 0;
         public const int Patch = 0;
-        public const int Build = 8;
+        public const int Build = 12;
     }
 }
