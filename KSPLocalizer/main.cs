@@ -52,16 +52,18 @@ namespace KspLocalizer
 
         internal static int GetNextTag { get { numericTag++; return numericTag; } }
         internal static bool separatePartsCfg = false;
+
+        internal static string prefix = "MyMod";
+        internal static bool revert = false;
+        internal static bool cleanbak = false;
+        internal static int maxLength = DefaultMaxLength;
+        internal static string outdir = "";
+        internal static bool csonly = false;
+        internal static bool cfgonly = false;
+        internal static bool numerictags = false;
+
         private static void Main(string[] args)
         {
-            string prefix = "MyMod";
-            bool revert = false;
-            bool cleanbak = false;
-            int maxLength = DefaultMaxLength;
-            string outdir = "";
-            bool csonly = false;
-            bool cfgonly = false;
-            bool numerictags = false;
             string appPath = AppDomain.CurrentDomain.BaseDirectory;
 
             Console.WriteLine("KSP Localizer version " + VersionInfo.FullVersion);

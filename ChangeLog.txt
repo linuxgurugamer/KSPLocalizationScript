@@ -1,4 +1,12 @@
 Changelog
+Note:  The last digit in the version reported during running is a build count.  This utility will
+		use the first three digits to track releases
 
 0.1.0
 	initial beta release
+
+0.1.1
+	Fixed syntax error in localization.sh
+	Added check for HTML color strings:  <color=...>  & </color> in code
+	Add test for numeric format strings, will not work on cases where the format string is embedded in other text.
+	Add default options to ini for most cli options

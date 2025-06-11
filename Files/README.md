@@ -57,7 +57,22 @@ An ini file is included which contains a few common strings to be ignored. It ca
 include specific files.  The strings can be either simple strings or regular expressions.  Both strings 
 and files can be excluded, only files can be included.  Full documentation for the file is at the head
 of the file.  The ini file included can be replaced by specifying the --inifile=<file> to use your
-own ini file.  Multiple ini files are allowed.
+own ini file.  Multiple ini files are allowed on the command line.
+
+The following options which duplicate the command-line options can be included at the top of the ini file.  
+A default value of true is used for those options which are either true or false and don’t have a value. 
+These must appear before any include/exclude sections:
+
+| INI File Options              | Description                                                                  |
+|-------------------------------|------------------------------------------------------------------------------|
+| outdir=<path>	                | Output path for `en-us.cfg` and en-us.csv files
+| prefix=<string>               | Localization key prefix (default: `MyMod_`) 
+| maxkeylength=<number>	        | Maximum length for localization keys (default: 25)
+| numerictags=<true|false>      | Use a sequential number for the tags 
+| separatePartsCfg=<true|false>	| Create a file for the part tags and one file for the code tags
+| csonly=<true|false>	        | Only process .cs files 
+| cfgonly=<true|false>	        | Only process .cfg files
+
 
 
 ## --revert and --cleanbak

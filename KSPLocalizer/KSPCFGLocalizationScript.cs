@@ -52,6 +52,7 @@ namespace KspLocalizer
                                 continue;
                             }
 
+
                             // Reuse existing key if we've already seen this exact string
                             if (!textToKey.TryGetValue(value, out string key))
                             {

@@ -1,6 +1,4 @@
-﻿using static KspLocalizer.KSPLocalizer;
-
-namespace KspLocalizer
+﻿namespace KspLocalizer
 {
     internal class IniReader
     {
@@ -32,32 +30,79 @@ namespace KspLocalizer
 
                 if (string.IsNullOrEmpty(trimmedLine))
                     continue;
-
-                bool isFileEntry = trimmedLine.StartsWith("file=");
-                if (isFileEntry)
-                    trimmedLine = trimmedLine.Substring(5);
-
-                bool isRegex = RegexUtils.LooksLikeRegex(trimmedLine);
-
-                var pattern = new SearchPattern(trimmedLine, isRegex);
-
-                switch (currentSection)
+                if (currentSection == "")
                 {
-                    case "include":
-                        if (isFileEntry)
-                            includeFiles.Add(pattern);
-                        else
-                            includeStrings.Add(pattern);
-                        break;
-                    case "exclude":
-                        if (isFileEntry)
-                            excludeFiles.Add(pattern);
-                        else
-                            excludeStrings.Add(pattern);
-                        break;
+                    int i = trimmedLine.IndexOf("=");
+                    if (i == -1)
+                        i = trimmedLine.Length-1;
+                    string val = trimmedLine.Substring(i + 1);
+
+                    switch (trimmedLine.Substring(0, i).ToLower())
+                    {
+                        case "outdir":
+                            KSPLocalizer.outdir = val;
+                            break;
+                        case "prefix":
+                            KSPLocalizer.prefix = val;
+                            break;
+                        case "maxkeylength":
+                            KSPLocalizer.maxLength = int.Parse(val);
+                            break;
+                        case "numerictags":
+                            if (val == "" || val.ToLower() == "true")
+                                KSPLocalizer.numerictags = true;
+                            if (val.ToLower() == "false")
+                                KSPLocalizer.numerictags = false;
+                            break;
+                        case "separatepartscfg":
+                            if (val == "" || val.ToLower() == "true")
+                                KSPLocalizer.separatePartsCfg = true;
+                            if (val.ToLower() == "false")
+                                KSPLocalizer.separatePartsCfg = false;
+                            break;
+                        case "csonly":
+                            if (val == "" || val.ToLower() == "true")
+                                KSPLocalizer.csonly = true;
+                            if (val.ToLower() == "false")
+                                KSPLocalizer.csonly = false;
+                            break;
+                        case "cfgonly":
+                            if (val == "" || val.ToLower() == "true")
+                                KSPLocalizer.cfgonly = true;
+                            if (val.ToLower() == "false")
+                                KSPLocalizer.cfgonly = false;
+                            break;
+                    }
+                }
+                else
+                {
+
+
+                    bool isFileEntry = trimmedLine.StartsWith("file=");
+                    if (isFileEntry)
+                        trimmedLine = trimmedLine.Substring(5);
+
+                    bool isRegex = RegexUtils.LooksLikeRegex(trimmedLine);
+
+                    var pattern = new SearchPattern(trimmedLine, isRegex);
+
+                    switch (currentSection)
+                    {
+                        case "include":
+                            if (isFileEntry)
+                                includeFiles.Add(pattern);
+                            else
+                                includeStrings.Add(pattern);
+                            break;
+                        case "exclude":
+                            if (isFileEntry)
+                                excludeFiles.Add(pattern);
+                            else
+                                excludeStrings.Add(pattern);
+                            break;
+                    }
                 }
             }
         }
-
     }
 }
