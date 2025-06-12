@@ -172,6 +172,20 @@ namespace KspLocalizer
                             bool loop = false;
                             do
                             {
+                                // static bool CheckForHTMLColor(string literal, string prefix, IDictionary<string, KSPLocalizer.Literal> keyMap, ref int dupCounts, bool numerictags)
+                            }
+                            while (CheckForHTMLColor(literal, prefix, keyMap, dupCounts, numerictags,
+                                ref verbatim, ref rebuilt, ref attribLoc, ref recognizedAttrib, ref modified));
+
+                            do
+                            {
+                                // static bool CheckForHTMLColor(string literal, string prefix, IDictionary<string, KSPLocalizer.Literal> keyMap, ref int dupCounts, bool numerictags)
+                            }
+                            while (CheckForStringFormatBraces(ref literal, prefix, keyMap, dupCounts, numerictags,
+                                ref verbatim, ref rebuilt, ref attribLoc, ref recognizedAttrib, ref modified));
+
+
+#if false
                                 loop = false;
                                 // Check for embedded html color
                                 //Console.WriteLine("\nloop start, literal: " + literal);
@@ -310,9 +324,9 @@ namespace KspLocalizer
                                 }
 
                             } while (loop);
-
+#endif
                             //Console.WriteLine("literal-final: " + literal);
-                            
+
                             if (verbatim || !literal.Any(char.IsLetter) || IsNumericFormatString(literal))
                             {
                                 string l = "";
@@ -360,6 +374,334 @@ namespace KspLocalizer
             return modified;
         }
 
+
+        /// <summary>
+        /// Checks for embedded HTML Color statements
+        /// </summary>
+        /// <param name="literal"></param>
+        /// <param name="prefix"></param>
+        /// <param name="keyMap"></param>
+        /// <param name="dupCounts"></param>
+        /// <param name="numerictags"></param>
+        /// <param name="verbatim"></param>
+        /// <param name="rebuilt"></param>
+        /// <param name="attribLoc"></param>
+        /// <param name="recognizedAttrib"></param>
+        /// <param name="modified"></param>
+        /// <returns></returns>
+        static bool CheckForHTMLColor(string literal,
+                                        string prefix, IDictionary<string,
+                                        KSPLocalizer.Literal> keyMap,
+                                        IDictionary<string, int> dupCounts,
+                                        bool numerictags,
+                                        ref bool verbatim,
+                                        ref StringBuilder rebuilt,
+                                        ref bool attribLoc,
+                                        ref bool recognizedAttrib,
+                                        ref bool modified)
+        {
+            bool loop = false;
+            // Check for embedded html color
+            //Console.WriteLine("\nloop start, literal: " + literal);
+
+            int colorStart = literal.IndexOf("<color=", StringComparison.OrdinalIgnoreCase);
+            int colorEnd = literal.IndexOf("</color>", StringComparison.OrdinalIgnoreCase);
+            loop = (colorStart != -1 && colorEnd != -1);
+            //Console.WriteLine("colorStart: " + colorStart + ", colorend: " + colorEnd);
+
+            if (colorStart != -1 && colorStart < colorEnd)
+            {
+                string literalOld = literal;
+                bool good = true;
+
+                string string1 = "", string2 = "";
+                int i = colorStart;
+
+                //    string1<color=...>
+                //    <color=...>
+                //    <color=...>string2
+
+
+                string1 = literal.Substring(0, i);
+                int i2 = literal.IndexOf(">");
+                if (i2 < literal.Length - 2)
+                    string2 = literal.Substring(i2 + 1);
+                string colorStr = literal.Substring(i, i2 - i + 1);
+                //Console.WriteLine("string1: " + string1);
+                //Console.WriteLine("colorStr: " + colorStr);
+                //Console.WriteLine("string2: " + string2);
+
+                if (string1.Length > 0)
+                {
+                    literal = string2;
+
+                    if (string1.Length > 0)
+                    {
+                        loop = true;
+
+                        {
+                            if (verbatim || !string1.Any(char.IsLetter))
+                            {
+                                string l = "";
+                                foreach (var c in string1)
+                                {
+                                    if (c != '\n')
+                                        l += c;
+                                    else
+                                        l += "\\n";
+                                }
+                                string1 = l;
+
+                                rebuilt.Append(" \"" + string1 + "\"");
+                            }
+                            else
+                            {
+                                string key = GetOrCreateKey(string1, prefix, keyMap, dupCounts, numerictags);
+                                if (!attribLoc && !recognizedAttrib)
+                                    rebuilt.Append($" Localizer.Format(\"#{key}\") + ");
+                                else
+                                    rebuilt.Append($" \"#{key}\"");
+                                modified = true;
+                            }
+                        }
+                    }
+                }
+                rebuilt.Append("\"" + colorStr + "\"");
+                literal = string2;
+                if (literal.Length > 0)
+                    rebuilt.Append(" +");
+                loop = true;
+
+            }
+            if (colorEnd != -1 && (colorEnd < colorStart || colorStart == -1))
+            {
+                {
+                    //    string1</color>
+                    //    </color>
+                    //    string1</color>string2
+                    //    </color>string2
+
+                    string string1 = "", string2 = "";
+                    int i = literal.IndexOf("</color>");
+                    if (i > 0)
+                        string1 = literal.Substring(0, i);
+                    i = literal.IndexOf(">");
+                    if (i < literal.Length - 2)
+                        string2 = literal.Substring(i + 1);
+
+
+                    //Console.WriteLine("string1.2: " + string1);
+                    //Console.WriteLine("string2.2: " + string2);
+
+                    if (string1.Length > 0)
+                    {
+                        loop = true;
+
+                        //if (string2.Length > 0)
+                        {
+                            loop = true;
+
+                            {
+                                if (verbatim || !string1.Any(char.IsLetter))
+                                {
+                                    string l = "";
+                                    foreach (var c in string1)
+                                    {
+                                        if (c != '\n')
+                                            l += c;
+                                        else
+                                            l += "\\n";
+                                    }
+                                    string1 = l;
+
+                                    rebuilt.Append(" \"" + string1 + "\"");
+                                }
+                                else
+                                {
+                                    string key = GetOrCreateKey(string1, prefix, keyMap, dupCounts, numerictags);
+                                    if (!attribLoc && !recognizedAttrib)
+                                        rebuilt.Append($" Localizer.Format(\"#{key}\")");
+                                    else
+                                        rebuilt.Append($" \"#{key}\"");
+                                    modified = true;
+                                }
+                            }
+                        }
+                    }
+
+                    literal = string2;
+
+                    rebuilt.Append(" + \"</color>\"");
+                    if (literal.Length > 0)
+                        rebuilt.Append(" + ");
+
+                }
+            }
+            return loop;
+        }
+        static bool CheckForStringFormatBraces(ref string literal,
+                                       string prefix, IDictionary<string,
+                                       KSPLocalizer.Literal> keyMap,
+                                       IDictionary<string, int> dupCounts,
+                                       bool numerictags,
+                                       ref bool verbatim,
+                                       ref StringBuilder rebuilt,
+                                       ref bool attribLoc,
+                                       ref bool recognizedAttrib,
+                                       ref bool modified)
+        {
+            bool loop = false;
+
+            int braceStart = literal.IndexOf("{");
+            int braceEnd = literal.IndexOf("}");
+            loop = (braceStart != -1 && braceEnd != -1);
+            //Console.WriteLine("braceStart: " + braceStart + ", braceEnd: " + braceEnd);
+
+            if (braceStart != -1 && braceStart < braceEnd)
+            {
+                string literalOld = literal;
+                bool good = true;
+
+                string string1 = "", string2 = "";
+                int i = braceStart;
+
+                //    string1{
+                //    {
+                //    {string2
+
+
+                string1 = literal.Substring(0, i);
+                int i2 = i + 1;
+                if (i2 < literal.Length - 2)
+                    string2 = literal.Substring(i2 + 2);
+                string formatStr = literal.Substring(i, i2 - i + 1);
+
+                //Console.WriteLine("string1: " + string1);
+                //Console.WriteLine("string2: " + string2);
+
+                string trailingSpaces = "";
+                if (string1.Length > 0)
+                {
+                    literal = string2;
+
+                    while (string1.Length > 0 && string1[string1.Length - 1] == ' ')
+                    {
+                        string1 = string1.Substring(0, string1.Length - 1);
+                        trailingSpaces += " ";
+                    }
+
+                    if (string1.Length > 0)
+                    {
+                        loop = true;
+
+                        {
+                            if (verbatim || !string1.Any(char.IsLetter))
+                            {
+                                string l = "";
+                                foreach (var c in string1)
+                                {
+                                    if (c != '\n')
+                                        l += c;
+                                    else
+                                        l += "\\n";
+                                }
+                                string1 = l;
+
+                                rebuilt.Append(" \"" + string1 + "\"");
+                            }
+                            else
+                            {
+                                string key = GetOrCreateKey(string1, prefix, keyMap, dupCounts, numerictags);
+                                if (!attribLoc && !recognizedAttrib)
+                                    rebuilt.Append($" Localizer.Format(\"#{key}\") + ");
+                                else
+                                    rebuilt.Append($" \"#{key}\"");
+                                modified = true;
+                            }
+                        }
+                    }
+                }
+                literal = string2;
+                formatStr = trailingSpaces + formatStr + "}";
+                while (literal.Length > 0 && literal[0] == ' ')
+                {
+                    literal = literal.Substring(1, literal.Length - 1);
+                    formatStr += " ";
+                }
+
+                rebuilt.Append("\"" + formatStr + "\"");
+                if (literal.Length > 0)
+                    rebuilt.Append(" +");
+                loop = true;
+
+            }
+            if (braceEnd != -1 && (braceEnd < braceStart || braceStart == -1))
+            {
+                {
+                    //    string1</color>
+                    //    </color>
+                    //    string1</color>string2
+                    //    </color>string2
+
+                    string string1 = "", string2 = "";
+                    int i = braceEnd;
+                    if (i > 0)
+                        string1 = literal.Substring(0, i);
+                    i = i + 1;
+                    if (i < literal.Length - 2)
+                        string2 = literal.Substring(i + 1);
+
+                    //Console.WriteLine("string1.2: " + string1);
+                    //Console.WriteLine("string2.2: " + string2);
+
+                    if (string1.Length > 0)
+                    {
+                        loop = true;
+
+                        //if (string2.Length > 0)
+                        {
+                            loop = true;
+
+                            {
+                                if (verbatim || !string1.Any(char.IsLetter))
+                                {
+                                    string l = "";
+                                    foreach (var c in string1)
+                                    {
+                                        if (c != '\n')
+                                            l += c;
+                                        else
+                                            l += "\\n";
+                                    }
+                                    string1 = l;
+
+                                    rebuilt.Append(" \"" + string1 + "\"");
+                                }
+                                else
+                                {
+                                    string key = GetOrCreateKey(string1, prefix, keyMap, dupCounts, numerictags);
+                                    if (!attribLoc && !recognizedAttrib)
+                                        rebuilt.Append($" Localizer.Format(\"#{key}\")");
+                                    else
+                                        rebuilt.Append($" \"#{key}\"");
+                                    modified = true;
+                                }
+                            }
+                        }
+                    }
+
+                    literal = string2;
+
+                    rebuilt.Append(" + \"}\"");
+                    if (literal.Length > 0)
+                        rebuilt.Append(" + ");
+
+                }
+            }
+            return loop;
+        }
+
+
         // ────────────────────────────────────────────────────────────────
 
         /// <summary>
@@ -367,19 +709,19 @@ namespace KspLocalizer
         /// </summary>
         //public static class FormatDetector
         //{
-            public static bool IsNumericFormatString(string input)
-            {
-                if (string.IsNullOrWhiteSpace(input))
-                    return false;
+        public static bool IsNumericFormatString(string input)
+        {
+            if (string.IsNullOrWhiteSpace(input))
+                return false;
 
-                // Standard numeric format: N, D, E, F, G, P, R, X with optional precision
-                var standardPattern = @"^[NDEFGRPXndefgrpx](\d+)?$";
+            // Standard numeric format: N, D, E, F, G, P, R, X with optional precision
+            var standardPattern = @"^[NDEFGRPXndefgrpx](\d+)?$";
 
-                // Custom numeric format: made of 0, #, ., ,, %, E0, etc.
-                var customPattern = @"^[#0.,%Ee+\-]*$";
+            // Custom numeric format: made of 0, #, ., ,, %, E0, etc.
+            var customPattern = @"^[#0.,%Ee+\-]*$";
 
-                return Regex.IsMatch(input, standardPattern) || Regex.IsMatch(input, customPattern);
-            }
+            return Regex.IsMatch(input, standardPattern) || Regex.IsMatch(input, customPattern);
+        }
         //}
 
         // ────────────────────────────────────────────────────────────────

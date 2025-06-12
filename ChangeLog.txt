@@ -11,6 +11,7 @@ Note:  The last digit in the version reported during running is a build count.  
 	Add test for numeric format strings, will not work on cases where the format string is embedded in other text.
 	Add default options to ini for most cli options
 
-0.1.2 (unreleased)
+0.1.2 
 	Added check for science results in cfg files (found in experiment defs)
 	Added new ini section for planets, to be used when mod has experiments for planet packs
+	Added check for embedded string formats (ie:  {0}   ) to NOT put them into the localized strings (Localizer.Format doesn't work with embedded braces)
