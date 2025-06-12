@@ -2,7 +2,6 @@
 
 using System.Globalization;
 using System.Text;
-using static KspLocalizer.KSPLocalizer;
 
 namespace KspLocalizer
 {
@@ -51,7 +50,6 @@ namespace KspLocalizer
                                 newLines.Add(line);
                                 continue;
                             }
-
 
                             // Reuse existing key if we've already seen this exact string
                             if (!textToKey.TryGetValue(value, out string key))
@@ -106,7 +104,7 @@ namespace KspLocalizer
         {
             field = field.ToLowerInvariant();
 
-            if (field is "title" or "description" or "manufacturer" or "label" or "guiname" or "tags")
+            if (field is "title" or "description" or "manufacturer" or "label" or "guiname" or "tags" or "tooltip")
                 return true;
 
             // action & event name heuristics
@@ -118,10 +116,45 @@ namespace KspLocalizer
             if ((field.Contains("action") || field.Contains("event")) && field.EndsWith("name"))
                 return true;
 
-
             if (PatternSearch.ContainsAny(field, KSPLocalizer.includeStrings))
                 return true;
 
+            if (IsScienceResult(field))
+                return true;
+
+            return false;
+        }
+
+        static internal List<string> celestialBodies = new List<string>();
+
+
+        static string[] situationStates = new[]
+        {
+            "SrfLanded",
+            "SrfSplashed",
+            "InSpace",
+            "FlyingLow",
+            "FlyingHigh",
+            "InSpaceLow",
+            "InSpaceHigh"
+        };
+
+        static bool IsScienceResult(string field)
+        {
+            if (field is "default")
+                return true;
+
+            foreach (var c in celestialBodies)
+            {
+                foreach (var s in situationStates)
+                {
+                    string str = (c + s).ToLower();
+                    if (field == str)
+                        return true;
+                    if (field.Contains(str)) 
+                        return true;
+                }
+            }
             return false;
         }
 

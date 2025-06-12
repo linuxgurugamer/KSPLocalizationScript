@@ -100,6 +100,9 @@
                             else
                                 excludeStrings.Add(pattern);
                             break;
+                        case "experimentplanets":
+                            KSPCFGPartLocalizer.celestialBodies.Add(trimmedLine);
+                            break;
                     }
                 }
             }

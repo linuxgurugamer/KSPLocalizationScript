@@ -10,3 +10,7 @@ Note:  The last digit in the version reported during running is a build count.  
 	Added check for HTML color strings:  <color=...>  & </color> in code
 	Add test for numeric format strings, will not work on cases where the format string is embedded in other text.
 	Add default options to ini for most cli options
+
+0.1.2 (unreleased)
+	Added check for science results in cfg files (found in experiment defs)
+	Added new ini section for planets, to be used when mod has experiments for planet packs
