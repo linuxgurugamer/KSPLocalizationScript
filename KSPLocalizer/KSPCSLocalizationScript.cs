@@ -174,7 +174,7 @@ namespace KspLocalizer
                             {
                                 // static bool CheckForHTMLColor(string literal, string prefix, IDictionary<string, KSPLocalizer.Literal> keyMap, ref int dupCounts, bool numerictags)
                             }
-                            while (CheckForHTMLColor(literal, prefix, keyMap, dupCounts, numerictags,
+                            while (CheckForHTMLColor(ref literal, prefix, keyMap, dupCounts, numerictags,
                                 ref verbatim, ref rebuilt, ref attribLoc, ref recognizedAttrib, ref modified));
 
                             do
@@ -389,7 +389,7 @@ namespace KspLocalizer
         /// <param name="recognizedAttrib"></param>
         /// <param name="modified"></param>
         /// <returns></returns>
-        static bool CheckForHTMLColor(string literal,
+        static bool CheckForHTMLColor(ref string literal,
                                         string prefix, IDictionary<string,
                                         KSPLocalizer.Literal> keyMap,
                                         IDictionary<string, int> dupCounts,
@@ -427,6 +427,7 @@ namespace KspLocalizer
                 if (i2 < literal.Length - 2)
                     string2 = literal.Substring(i2 + 1);
                 string colorStr = literal.Substring(i, i2 - i + 1);
+                
                 //Console.WriteLine("string1: " + string1);
                 //Console.WriteLine("colorStr: " + colorStr);
                 //Console.WriteLine("string2: " + string2);
@@ -473,6 +474,8 @@ namespace KspLocalizer
                 loop = true;
 
             }
+            //Console.WriteLine("literal.2: " + literal);
+
             if (colorEnd != -1 && (colorEnd < colorStart || colorStart == -1))
             {
                 {
