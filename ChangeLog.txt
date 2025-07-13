@@ -17,3 +17,12 @@ Note:  The last digit in the version reported during running is a build count.  
 	Added check for embedded string formats (ie:  {0}   ) to NOT put them into the localized strings (Localizer.Format doesn't work with embedded braces)
 0.1.3
 	Fixed bug induced by update for the embedded string formats which was preventing <color... strings from being processed
+
+0.1.4
+	Added check for unknown argument, exits if any exist
+	Fixed edge case with embedded format strings (ie:  if nonletters are before the format)
+	Added --excludedir cli option and dir= ini file option to exclude a directory from processing
+	Added protection to avoid overwriting any existing files
+	Added NO_LOCALIZATION to ini file for ignoring, so that a single line can be ignored by adding a comment at the end
+	Added check for outdir containing PluginData
+	Updated README with correct executable name

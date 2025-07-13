@@ -79,6 +79,7 @@
 
 
                     bool isFileEntry = trimmedLine.StartsWith("file=");
+                    bool isDirEntry = trimmedLine.StartsWith("dir=");
                     if (isFileEntry)
                         trimmedLine = trimmedLine.Substring(5);
 
@@ -98,7 +99,12 @@
                             if (isFileEntry)
                                 excludeFiles.Add(pattern);
                             else
-                                excludeStrings.Add(pattern);
+                            {
+                                if (isDirEntry)
+                                    KSPLocalizer.excludeDirs.Add(pattern.ToString()); 
+                                else
+                                    excludeStrings.Add(pattern);
+                            }
                             break;
                         case "experimentplanets":
                             KSPCFGPartLocalizer.celestialBodies.Add(trimmedLine);

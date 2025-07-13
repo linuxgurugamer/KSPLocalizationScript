@@ -16,6 +16,9 @@ namespace KspLocalizer
             var textToKey = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase); // NEW: reverse map for dedup
             var dupCounters = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
             var cfgFiles = Directory.EnumerateFiles(gameDataPath, "*.cfg", SearchOption.AllDirectories).ToList();
+
+
+
             int modifiedFiles = 0;
             int initialKeyToTextCount = 0;
             if (!csonly)
@@ -24,51 +27,63 @@ namespace KspLocalizer
 
                 foreach (string file in cfgFiles)
                 {
-                    if (!PatternSearch.ContainsAny(Path.GetFileName(file), KSPLocalizer.excludeFiles))
+                    bool ok = true;
+                    foreach (var f in KSPLocalizer.excludeDirs)
                     {
-                        var originalLines = File.ReadAllLines(file);
-                        var newLines = new List<string>(originalLines.Length);
-                        bool changed = false;
-
-                        foreach (string line in originalLines)
+                        if (file.Contains(f))
                         {
-                            string trimmed = line.TrimStart();
-
-                            // Skip comments and lines without '='
-                            if (trimmed.StartsWith("//") || !trimmed.Contains('='))
-                            {
-                                newLines.Add(line);
-                                continue;
-                            }
-
-                            int eq = trimmed.IndexOf('=');
-                            string field = trimmed[..eq].Trim();
-                            string value = trimmed[(eq + 1)..].Trim();
-
-                            if (!IsDisplayField(field) || value.Length == 0 || value.StartsWith('#') || IsNumeric(value))
-                            {
-                                newLines.Add(line);
-                                continue;
-                            }
-
-                            // Reuse existing key if we've already seen this exact string
-                            if (!textToKey.TryGetValue(value, out string key))
-                            {
-                                key = MakeKey(prefix, value, maxLength, keyToText, dupCounters, numerictags);
-                                textToKey[value] = key;
-                                keyToText[key] = new KSPLocalizer.Literal(value, KSPLocalizer.Origin.cs); // record once per unique text
-                            }
-
-                            // rebuild the line with localized value
-                            string rebuilt = line.Substring(0, line.IndexOf('=') + 1) + " #" + key;
-                            newLines.Add(rebuilt);
-                            changed = true;
+                            ok = false;
+                            break;
                         }
-
-                        if (changed)
+                    }
+                    if (ok)
+                    {
+                        if (!PatternSearch.ContainsAny(Path.GetFileName(file), KSPLocalizer.excludeFiles))
                         {
-                            SaveWithBackup(file, newLines);
-                            modifiedFiles++;
+                            var originalLines = File.ReadAllLines(file);
+                            var newLines = new List<string>(originalLines.Length);
+                            bool changed = false;
+
+                            foreach (string line in originalLines)
+                            {
+                                string trimmed = line.TrimStart();
+
+                                // Skip comments and lines without '='
+                                if (trimmed.StartsWith("//") || !trimmed.Contains('='))
+                                {
+                                    newLines.Add(line);
+                                    continue;
+                                }
+
+                                int eq = trimmed.IndexOf('=');
+                                string field = trimmed[..eq].Trim();
+                                string value = trimmed[(eq + 1)..].Trim();
+
+                                if (!IsDisplayField(field) || value.Length == 0 || value.StartsWith('#') || IsNumeric(value))
+                                {
+                                    newLines.Add(line);
+                                    continue;
+                                }
+
+                                // Reuse existing key if we've already seen this exact string
+                                if (!textToKey.TryGetValue(value, out string key))
+                                {
+                                    key = MakeKey(prefix, value, maxLength, keyToText, dupCounters, numerictags);
+                                    textToKey[value] = key;
+                                    keyToText[key] = new KSPLocalizer.Literal(value, KSPLocalizer.Origin.cs); // record once per unique text
+                                }
+
+                                // rebuild the line with localized value
+                                string rebuilt = line.Substring(0, line.IndexOf('=') + 1) + " #" + key;
+                                newLines.Add(rebuilt);
+                                changed = true;
+                            }
+
+                            if (changed)
+                            {
+                                SaveWithBackup(file, newLines);
+                                modifiedFiles++;
+                            }
                         }
                     }
                 }
@@ -151,7 +166,7 @@ namespace KspLocalizer
                     string str = (c + s).ToLower();
                     if (field == str)
                         return true;
-                    if (field.Contains(str)) 
+                    if (field.Contains(str))
                         return true;
                 }
             }
@@ -250,7 +265,7 @@ namespace KspLocalizer
         private static void WriteCfgFile(string path, IDictionary<string, KSPLocalizer.Literal> keyToText, KSPLocalizer.Origin origin)
         {
             using var sw = new StreamWriter(path, true, Encoding.UTF8);
-            sw.WriteLine("// Autogenerated by KSP_Localizer");
+            sw.WriteLine(KSPLocalizer.firstCfgLine);
             sw.WriteLine("Localization");
             sw.WriteLine("{");
             sw.WriteLine("    en-us");
@@ -281,7 +296,7 @@ namespace KspLocalizer
         private static void WriteCsv(string path, IDictionary<string, KSPLocalizer.Literal> keyToText)
         {
             using var sw = new StreamWriter(path, false, Encoding.UTF8);
-            sw.WriteLine("Key,Text");
+            sw.WriteLine(KSPLocalizer.firstCsvLine);
             foreach (var kvp in keyToText)
             {
                 string textEscaped = kvp.Value.literal.Replace("\"", "\"\"");

@@ -1,11 +1,25 @@
 ﻿// KspLocalizer.cs
 
 
+using System.Globalization;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions; // only for key sanitising & Regex.Unescape
 
 namespace KspLocalizer
 {
+    public static class CharExtensions
+    {
+        public static bool IsVarLetter(this char c)
+        {
+            if (Char.IsAscii(c))
+            {
+                return Char.IsBetween(c, 'a', 'z') || Char.IsBetween(c, 'A', 'Z') || Char.IsBetween(c, '0', '9') || c == '_';
+
+            }
+            return false;
+        }
+    }
 
     internal static class KspCSLocalizer
     {
@@ -48,8 +62,20 @@ namespace KspLocalizer
 
             foreach (var cs in allFiles)
             {
-                if (!PatternSearch.ContainsAny(Path.GetFileName(cs), KSPLocalizer.excludeFiles))
-                    modifiedFiles += (KspCSLocalizer.ProcessFile(cs, prefix, keyMap, dupCounts, numerictags) ? 1 : 0);
+                bool ok = true;
+                foreach (var f in KSPLocalizer.excludeDirs)
+                {
+                    if (cs.Contains(f))
+                    {
+                        ok = false;
+                        break;
+                    }
+                }
+                if (ok)
+                {
+                    if (!PatternSearch.ContainsAny(Path.GetFileName(cs), KSPLocalizer.excludeFiles))
+                        modifiedFiles += (KspCSLocalizer.ProcessFile(cs, prefix, keyMap, dupCounts, numerictags) ? 1 : 0);
+                }
             }
             Console.WriteLine($"\n\nCode Files Processed:\n");
             Console.WriteLine($" {allFiles.Count()} *.cs files; modified {modifiedFiles}; generated {keyMap.Count} unique keys.\n\n");
@@ -78,6 +104,7 @@ namespace KspLocalizer
             }
 
         }
+
 
         // ────────────────────────────────────────────────────────────────
         internal static bool ProcessFile(string path,
@@ -163,6 +190,7 @@ namespace KspLocalizer
                     if (CsTokenizer.IsStringToken(tok))
                     {
                         string literal = ExtractLiteral(tok, out bool verbatim);
+
                         if (literal.Length == 0)
                         {
                             rebuilt.Append("\"\"");
@@ -184,150 +212,9 @@ namespace KspLocalizer
                             while (CheckForStringFormatBraces(ref literal, prefix, keyMap, dupCounts, numerictags,
                                 ref verbatim, ref rebuilt, ref attribLoc, ref recognizedAttrib, ref modified));
 
-
-#if false
-                                loop = false;
-                                // Check for embedded html color
-                                //Console.WriteLine("\nloop start, literal: " + literal);
-
-                                int colorStart = literal.IndexOf("<color=", StringComparison.OrdinalIgnoreCase);
-                                int colorEnd = literal.IndexOf("</color>", StringComparison.OrdinalIgnoreCase);
-                                loop = (colorStart != -1 && colorEnd != -1);
-                                //Console.WriteLine("colorStart: " + colorStart + ", colorend: " + colorEnd);
-
-                                if (colorStart != -1 && colorStart < colorEnd)
-                                {
-                                    string literalOld = literal;
-                                    bool good = true;
-
-                                    string string1 = "", string2 = "";
-                                    int i = colorStart;
-
-                                    //    string1<color=...>
-                                    //    <color=...>
-                                    //    <color=...>string2
-
-
-                                    string1 = literal.Substring(0, i);
-                                    int i2 = literal.IndexOf(">");
-                                    if (i2 < literal.Length - 2)
-                                        string2 = literal.Substring(i2 + 1);
-                                    string colorStr = literal.Substring(i, i2 - i + 1);
-                                    //Console.WriteLine("string1: " + string1);
-                                    //Console.WriteLine("colorStr: " + colorStr);
-                                    //Console.WriteLine("string2: " + string2);
-
-                                    if (string1.Length > 0)
-                                    {
-                                        literal = string2;
-
-                                        if (string1.Length > 0)
-                                        {
-                                            loop = true;
-
-                                            {
-                                                if (verbatim || !string1.Any(char.IsLetter))
-                                                {
-                                                    string l = "";
-                                                    foreach (var c in string1)
-                                                    {
-                                                        if (c != '\n')
-                                                            l += c;
-                                                        else
-                                                            l += "\\n";
-                                                    }
-                                                    string1 = l;
-
-                                                    rebuilt.Append(" \"" + string1 + "\"");
-                                                }
-                                                else
-                                                {
-                                                    string key = GetOrCreateKey(string1, prefix, keyMap, dupCounts, numerictags);
-                                                    if (!attribLoc && !recognizedAttrib)
-                                                        rebuilt.Append($" Localizer.Format(\"#{key}\") + ");
-                                                    else
-                                                        rebuilt.Append($" \"#{key}\"");
-                                                    modified = true;
-                                                }
-                                            }
-                                        }
-                                    }
-                                    rebuilt.Append("\"" + colorStr + "\"");
-                                    literal = string2;
-                                    if (literal.Length > 0)
-                                        rebuilt.Append(" +");
-                                    loop = true;
-
-                                }
-                                if (colorEnd != -1 && (colorEnd < colorStart || colorStart == -1))
-                                {
-                                    {
-                                        //    string1</color>
-                                        //    </color>
-                                        //    string1</color>string2
-                                        //    </color>string2
-
-                                        string string1 = "", string2 = "";
-                                        int i = literal.IndexOf("</color>");
-                                        if (i > 0)
-                                            string1 = literal.Substring(0, i);
-                                        i = literal.IndexOf(">");
-                                        if (i < literal.Length - 2)
-                                            string2 = literal.Substring(i + 1);
-
-                                        //Console.WriteLine("string1.2: " + string1);
-                                        //Console.WriteLine("string2.2: " + string2);
-
-                                        if (string1.Length > 0)
-                                        {
-                                            loop = true;
-
-                                            //if (string2.Length > 0)
-                                            {
-                                                loop = true;
-
-                                                {
-                                                    if (verbatim || !string1.Any(char.IsLetter))
-                                                    {
-                                                        string l = "";
-                                                        foreach (var c in string1)
-                                                        {
-                                                            if (c != '\n')
-                                                                l += c;
-                                                            else
-                                                                l += "\\n";
-                                                        }
-                                                        string1 = l;
-
-                                                        rebuilt.Append(" \"" + string1 + "\"");
-                                                    }
-                                                    else
-                                                    {
-                                                        string key = GetOrCreateKey(string1, prefix, keyMap, dupCounts, numerictags);
-                                                        if (!attribLoc && !recognizedAttrib)
-                                                            rebuilt.Append($" Localizer.Format(\"#{key}\")");
-                                                        else
-                                                            rebuilt.Append($" \"#{key}\"");
-                                                        modified = true;
-                                                    }
-                                                }
-                                            }
-                                        }
-
-                                        literal = string2;
-
-                                        rebuilt.Append(" + \"</color>\"");
-                                        if (literal.Length > 0)
-                                            rebuilt.Append(" + ");
-
-                                    }
-                                }
-
-                            } while (loop);
-#endif
                             //Console.WriteLine("literal-final: " + literal);
 
-                            if (verbatim || !literal.Any(char.IsLetter) || IsNumericFormatString(literal))
+                            if (verbatim || !literal.Any(CharExtensions.IsVarLetter) || IsNumericFormatString(literal))
                             {
                                 string l = "";
                                 foreach (var c in literal)
@@ -441,7 +328,7 @@ namespace KspLocalizer
                         loop = true;
 
                         {
-                            if (verbatim || !string1.Any(char.IsLetter))
+                            if (verbatim || !string1.Any(CharExtensions.IsVarLetter))
                             {
                                 string l = "";
                                 foreach (var c in string1)
@@ -505,7 +392,7 @@ namespace KspLocalizer
                             loop = true;
 
                             {
-                                if (verbatim || !string1.Any(char.IsLetter))
+                                if (verbatim || !string1.Any(CharExtensions.IsVarLetter))
                                 {
                                     string l = "";
                                     foreach (var c in string1)
@@ -598,7 +485,7 @@ namespace KspLocalizer
                         loop = true;
 
                         {
-                            if (verbatim || !string1.Any(char.IsLetter))
+                            if (verbatim || !(string1.Any(CharExtensions.IsVarLetter) && string1.Contains(".")))
                             {
                                 string l = "";
                                 foreach (var c in string1)
@@ -610,7 +497,7 @@ namespace KspLocalizer
                                 }
                                 string1 = l;
 
-                                rebuilt.Append(" \"" + string1 + "\"");
+                                rebuilt.Append(" \"" + string1 + "\" + ");
                             }
                             else
                             {
@@ -618,7 +505,7 @@ namespace KspLocalizer
                                 if (!attribLoc && !recognizedAttrib)
                                     rebuilt.Append($" Localizer.Format(\"#{key}\") + ");
                                 else
-                                    rebuilt.Append($" \"#{key}\"");
+                                    rebuilt.Append($" \"#{key}\" + ");
                                 modified = true;
                             }
                         }
@@ -666,7 +553,7 @@ namespace KspLocalizer
                             loop = true;
 
                             {
-                                if (verbatim || !string1.Any(char.IsLetter))
+                                if (verbatim || !string1.Any(CharExtensions.IsVarLetter))
                                 {
                                     string l = "";
                                     foreach (var c in string1)
