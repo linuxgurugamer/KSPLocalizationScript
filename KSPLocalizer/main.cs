@@ -24,7 +24,6 @@
 // 
 
 using KSPLocalizer;
-using System.IO;
 
 namespace KspLocalizer
 {
@@ -44,7 +43,7 @@ namespace KspLocalizer
         }
 
         private const int DefaultMaxLength = 25;
-        static int numericTag = 0;
+        internal static int numericStartAt = 0;
 
         internal static HashSet<SearchPattern> includeStrings = new HashSet<SearchPattern>();
         internal static HashSet<SearchPattern> includeFiles = new HashSet<SearchPattern>();
@@ -52,7 +51,7 @@ namespace KspLocalizer
         internal static HashSet<SearchPattern> excludeFiles = new HashSet<SearchPattern>();
         internal static List<string> excludeDirs = new List<string>();
 
-        internal static int GetNextTag { get { numericTag++; return numericTag; } }
+        internal static int GetNextTag { get { numericStartAt++; return numericStartAt; } }
         internal static bool separatePartsCfg = false;
 
         internal static string prefix = "MyMod";
@@ -104,12 +103,28 @@ namespace KspLocalizer
                 else
                 if (arg.StartsWith("--inifile=")) // 10 chars long
                 {
-                    inifile = arg.Substring(17);
+                    inifile = arg.Substring(10);
                     IniReader.ReadIniFile(inifile, ref includeStrings, ref includeFiles, ref excludeStrings, ref excludeFiles);
                 }
                 else
                 if (arg.Equals("--numerictags", StringComparison.OrdinalIgnoreCase))
                 {
+                    numerictags = true;
+                }
+                else
+                if (arg.StartsWith("--numerictags=", StringComparison.OrdinalIgnoreCase))
+                {
+                    string val = arg.Substring(14);
+
+                    if (IniReader.IsInt(val))
+                    {
+                        KSPLocalizer.numericStartAt = int.Parse(val) - 1;
+                    }
+                    else
+                    {
+                        Console.WriteLine("Numeric tags requested, but no valid value provided");
+                    }
+
                     numerictags = true;
                 }
                 else
@@ -150,7 +165,7 @@ namespace KspLocalizer
                 }
                 else
                 if (arg.Equals("--help", StringComparison.OrdinalIgnoreCase) ||
-                    arg.Equals("-?", StringComparison.OrdinalIgnoreCase) )
+                    arg.Equals("-?", StringComparison.OrdinalIgnoreCase))
                 {
                     help = true;
                 }
@@ -256,7 +271,7 @@ namespace KspLocalizer
                     return;
                 }
             }
-            if (File.Exists(csvPath) )
+            if (File.Exists(csvPath))
             {
                 Console.WriteLine($"{csvPath} exists, exiting without any changes");
                 return;
@@ -290,7 +305,7 @@ namespace KspLocalizer
                     Console.WriteLine("firstline is : " + (firstLine == null ? " null" : "empty"));
                     return false;
                 }
-                Console.WriteLine("firstLine: " +firstLine);
+                Console.WriteLine("firstLine: " + firstLine);
                 return firstLine.Contains(expectedLine);
             }
         }

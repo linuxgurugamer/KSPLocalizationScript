@@ -2,6 +2,12 @@
 {
     internal class IniReader
     {
+        public static bool  IsInt(string s)
+        {
+            return !string.IsNullOrWhiteSpace(s) &&
+                   int.TryParse(s, out _);
+        } 
+
         public static void ReadIniFile(
                string filePath,
                ref HashSet<SearchPattern> includeStrings,
@@ -53,6 +59,11 @@
                                 KSPLocalizer.numerictags = true;
                             if (val.ToLower() == "false")
                                 KSPLocalizer.numerictags = false;
+                            if (IsInt(val))
+                            {
+                                KSPLocalizer.numericStartAt = int.Parse(val);
+                                KSPLocalizer.numerictags = true;
+                            }
                             break;
                         case "separatepartscfg":
                             if (val == "" || val.ToLower() == "true")

@@ -46,7 +46,8 @@ Attributes are a trickier issue, since they require constances.  To define a reg
 | --outdir=<path>             | Output path for `en-us.cfg` and en-us.csv files                              |
 | --prefix=<string>           | Localization key prefix (default: `MyMod_`)                                  |
 | --maxkeylength=<number>     | Maximum length for localization keys (default: 25)                           |
-| --numerictags               | Use a sequential number for the tags                                         |
+| --numerictags               | Use a sequential number for the tags starting at 1                           |
+| --numerictags=###           | Use a sequential number for the tags, starting at specified number           |
 | --separatePartsCfg          | Create a file for the part tags and one file for the code tags               |
 | --inifile=<file>            | specify a ini file which contains include and exclude strings (example below)|
 | --csonly                    | Only process .cs files                                                       |
@@ -101,6 +102,7 @@ Using the L-Tech mod as an example, the following will replace all strings with 
 tags and put the resulting files into the GameData/LTech/Localization directory
 
 	KSPLocalizer.exe   L-Tech --prefix=LTech_LOC --outdir=L-Tech/GameData/LTech/Localization --numerictags 
+	KSPLocalizer.exe   L-Tech --prefix=LTech_LOC --outdir=L-Tech/GameData/LTech/Localization --numerictags=123 
 
 
 This will:
@@ -149,3 +151,6 @@ available to fix this:
 			--inifile=inifile.ini
 		and add the strings which should be ignored to the file
 
+A useful utility to be able to change the language when the game starts is this:  
+	Language Changer written by averageksp
+	https://github.com/averageksp/LanguageChanger

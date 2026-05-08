@@ -26,3 +26,7 @@ Note:  The last digit in the version reported during running is a build count.  
 	Added NO_LOCALIZATION to ini file for ignoring, so that a single line can be ignored by adding a comment at the end
 	Added check for outdir containing PluginData
 	Updated README with correct executable name
+
+0.1.5
+	Fixed error with specifying ini file on cli
+	Added ability to specify a starting number with --numerictags
